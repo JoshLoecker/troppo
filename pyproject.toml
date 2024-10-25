@@ -9,6 +9,11 @@ authors = [
 readme = "README.rst"
 license = {file = "LICENSE"}
 requires-python = ">=3.9"
+dependencies = [
+    "cobamp>=0.2.1",
+    "cobra>=0.24.0",
+    "xlrd>=1.2.0"
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
@@ -26,14 +31,5 @@ Repository = "https://github.com/BioSystemsUM/troppo/"
 Issues = "https://github.com/BioSystemsUM/troppo/issues"
 
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-package-dir = { "" = "src" }
-packages = { find = "src" }
-install_requires = [
-    "cobamp>=0.2.1",
-    "cobra>=0.24.0",
-    "xlrd>=1.2.0"
-]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
