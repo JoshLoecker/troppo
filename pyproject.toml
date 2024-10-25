@@ -1,7 +1,7 @@
 [project]
 name = "troppo"
 version = "0.1.0"
-description = "Constraint-based modeling framework for the enumeration of pathway analysis concepts"
+description = "Reconstruction algorithms for Python"
 authors = [
     {name = "Jorge Ferreira", email = "jorge.ferreira@ceb.uminho.pt"},
     {name = "Vítor Vieira"}
