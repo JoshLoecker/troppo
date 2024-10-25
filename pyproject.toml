@@ -8,7 +8,6 @@ authors = [
 ]
 readme = "README.rst"
 license = {file = "LICENSE"}
-homepage = "https://github.com/BioSystemsUM/troppo"
 requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -21,7 +20,10 @@ classifiers = [
 
 
 [project.urls]
-Documentation = "https://github.com/BioSystemsUM/troppo/blob/main/README.rst"
+Homepage = "https://github.com/BioSystemsUM/troppo"
+Documentation = "http://troppo-bisbi.readthedocs.io/"
+Repository = "https://github.com/BioSystemsUM/troppo/"
+Issues = "https://github.com/BioSystemsUM/troppo/issues"
 
 [build-system]
 requires = ["setuptools>=61.0"]
