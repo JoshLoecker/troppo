@@ -14,7 +14,7 @@ class ContextSpecificModelReconstructionAlgorithm(object):
 	__metaclass__ = abc.ABCMeta
 
 	@abc.abstractmethod
-	def __init__(self, S, lb, ub, properties):
+	def __init__(self, S, lb, ub, properties, solver):
 		pass
 
 	@abc.abstractmethod
