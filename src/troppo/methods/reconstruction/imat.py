@@ -30,7 +30,8 @@ class IMATProperties(PropertiesReconstruction):
         new_mandatory = {
             'exp_vector': lambda x: isinstance(x, list) and len(x) > 0 or isinstance(x, ndarray),
             'exp_thresholds': lambda x: type(x) in (tuple, list, ndarray) and type(x[0]) in [float, int] and type(
-                x[1]) in [float, int]
+                x[1]) in [float, int],
+            "solver": solver
         }
         new_optional = {
             'core': lambda x: type(x) in [ndarray, list, tuple],
@@ -49,8 +50,6 @@ class IMATProperties(PropertiesReconstruction):
             self['tolerance'] = tolerance
         if epsilon:
             self['epsilon'] = epsilon
-        if solver:
-            self["solver"] = solver
 
     @staticmethod
     def from_integrated_scores(scores: list, **kwargs) -> 'IMATProperties':
