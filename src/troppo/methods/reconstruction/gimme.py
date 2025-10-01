@@ -1,6 +1,8 @@
 from collections import OrderedDict
+from typing import Iterable, Mapping, Optional, Sequence, Union
 
 import numpy as np
+import numpy.typing as npt
 from cobamp.core.models import ConstraintBasedModel
 from cobamp.core.optimization import Solution
 from numpy import array, ndarray
