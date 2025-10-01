@@ -251,7 +251,12 @@ class GIMMEProperties(PropertiesReconstruction):
         GIMMEProperties
 
         """
-        return GIMMEProperties(exp_vector=scores, **{k: v for k, v in kwargs.items() if "exp_vector" not in k})
+        if "objectives" not in kwargs:
+            raise ValueError("objectives must be provided")
+        kwargs.pop("exp_vector", None)
+        kwargs.pop("objectives", None)
+
+        return GIMMEProperties(exp_vector=scores, objectives=kwargs["objectives"], **kwargs)
 
 
 class GIMME(ContextSpecificModelReconstructionAlgorithm):
