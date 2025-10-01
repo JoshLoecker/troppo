@@ -3,16 +3,17 @@ name = "troppo"
 version = "0.1.0"
 description = "Reconstruction algorithms for Python"
 authors = [
-    {name = "Jorge Ferreira", email = "jorge.ferreira@ceb.uminho.pt"},
-    {name = "Vítor Vieira"}
+    { name = "Jorge Ferreira", email = "jorge.ferreira@ceb.uminho.pt" },
+    { name = "Vítor Vieira" }
 ]
 readme = "README.rst"
-license = {file = "LICENSE.txt"}
+license = { file = "LICENSE.txt" }
 requires-python = ">=3.9"
 dependencies = [
     "cobamp>=0.2.1",
     "cobra>=0.24.0",
-    "xlrd>=1.2.0"
+    "xlrd>=1.2.0",
+    "numpy>=1.20"
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
