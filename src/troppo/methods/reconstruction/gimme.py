@@ -64,8 +64,13 @@ class GIMMEModel(ConstraintBasedModel):
                 exp_vector_n[rxmap] = val
         return exp_vector_n
 
-    def optimize_gimme(self, exp_vector: list, objectives: list or tuple, obj_frac: list or tuple or float = 0.9, flux_thres: float = None):
+    def optimize_gimme(
+        self,
+        exp_vector: Iterable[float],
+        objectives: Iterable[Mapping[int, int]],
+        obj_frac: Union[Iterable[float], float] = 0.9,
         flux_thres: Optional[float] = None,
+    ):
         """
         Optimize the GIMME model.
 
@@ -74,7 +79,7 @@ class GIMMEModel(ConstraintBasedModel):
         exp_vector: list
             A list of expression values for each reaction in the GIMME model.
         objectives: list or tuple
-            A list of dictionaries that define the objectives of the GIMME model.
+            A list of dictionaries where keys are reaction indices and values define the objectives of the GIMME model.
         obj_frac: list or tuple or float
             A list of fractions that define the lower bounds of the objectives. If a float is given, the same fraction
             is used for all objectives.
@@ -194,9 +199,9 @@ class GIMMEProperties(PropertiesReconstruction):
 
     def __init__(
         self,
-        exp_vector: list,
-        objectives: list or tuple,
-        obj_frac: list or tuple or float = 0.9,
+        exp_vector: Iterable[float],
+        objectives: Sequence,
+        obj_frac: Union[Iterable[float], float] = 0.9,
         preprocess: bool = False,
         flux_threshold: Optional[float] = None,
         solver: Optional[str] = None,
@@ -230,7 +235,7 @@ class GIMMEProperties(PropertiesReconstruction):
         self["flux_threshold"] = 1e-4 if flux_threshold is None else flux_threshold
 
     @staticmethod
-    def from_integrated_scores(scores: list, **kwargs):
+    def from_integrated_scores(scores: Iterable[float], **kwargs):
         """
         Create GIMMEProperties from integrated scores
 
