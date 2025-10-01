@@ -210,16 +210,16 @@ class GIMMEProperties(PropertiesReconstruction):
     ):
         new_mandatory = {
             "exp_vector": lambda x: isinstance(x, list) and len(x) > 0 or isinstance(x, ndarray),
-            "preprocess": lambda x: isinstance(x, bool) or x is None,
-            "objectives": lambda x: type(x) in [list, tuple, ndarray],
+            "preprocess": lambda x: isinstance(x, (bool, None)),
+            "objectives": lambda x: isinstance(x, (list, tuple, npt.NDArray)),
             "reaction_ids": lambda x: isinstance(x, list) and len(x) > 0 or isinstance(x, ndarray),
             "metabolite_ids": lambda x: isinstance(x, list) and len(x) > 0 or isinstance(x, ndarray),
         }
 
         new_optional = {
-            "obj_frac": lambda x: type(x) in [ndarray, list, tuple, float],
-            "flux_threshold": lambda x: isinstance(x, float) or x is None,
-            "solver": lambda x: isinstance(x, str) or x is None,
+            "obj_frac": lambda x: isinstance(x, (ndarray, list, tuple, float)),
+            "flux_threshold": lambda x: isinstance(x, (float, None)),
+            "solver": lambda x: isinstance(x, (str, None)),
         }
         super().__init__()
 
