@@ -30,7 +30,7 @@ class GIMMEModel(ConstraintBasedModel):
 
     """
 
-    def __init__(self, cbmodel: ConstraintBasedModel, solver: str or None = None):
+    def __init__(self, cbmodel: ConstraintBasedModel, solver: Optional[str] = None):
         self.cbmodel = cbmodel
         if not self.cbmodel.model:
             self.cbmodel.initialize_optimizer()
@@ -65,6 +65,7 @@ class GIMMEModel(ConstraintBasedModel):
         return exp_vector_n
 
     def optimize_gimme(self, exp_vector: list, objectives: list or tuple, obj_frac: list or tuple or float = 0.9, flux_thres: float = None):
+        flux_thres: Optional[float] = None,
         """
         Optimize the GIMME model.
 
@@ -197,10 +198,10 @@ class GIMMEProperties(PropertiesReconstruction):
         objectives: list or tuple,
         obj_frac: list or tuple or float = 0.9,
         preprocess: bool = False,
-        flux_threshold: float = None,
-        solver: str = None,
-        reaction_ids: list = None,
-        metabolite_ids: list = None,
+        flux_threshold: Optional[float] = None,
+        solver: Optional[str] = None,
+        reaction_ids: Optional[Iterable[str]] = None,
+        metabolite_ids: Optional[Iterable[str]] = None,
     ):
         new_mandatory = {
             "exp_vector": lambda x: isinstance(x, list) and len(x) > 0 or isinstance(x, ndarray),
