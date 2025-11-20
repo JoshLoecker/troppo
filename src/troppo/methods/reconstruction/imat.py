@@ -25,34 +25,37 @@ class IMATProperties(PropertiesReconstruction):
     epsilon : float, optional
         The epsilon, by default 1
     """
-    def __init__(self, exp_vector: np.ndarray or list, exp_thresholds: tuple or list or ndarray,
-                 core: ndarray or list or tuple = None, tolerance: float = 1e-8, epsilon: int or float = 1, solver: str = None):
+
+    def __init__(
+        self,
+        exp_vector: np.ndarray or list,
+        exp_thresholds: tuple or list or ndarray,
+        core: ndarray or list or tuple = None,
+        tolerance: float = 1e-8,
+        epsilon: int or float = 1,
+        solver: str = None,
+    ):
         new_mandatory = {
-            'exp_vector': lambda x: isinstance(x, list) and len(x) > 0 or isinstance(x, ndarray),
-            'exp_thresholds': lambda x: type(x) in (tuple, list, ndarray) and type(x[0]) in [float, int] and type(
-                x[1]) in [float, int],
-            "solver": solver
+            "exp_vector": lambda x: isinstance(x, list) and len(x) > 0 or isinstance(x, ndarray),
+            "exp_thresholds": lambda x: type(x) in (tuple, list, ndarray) and type(x[0]) in [float, int] and type(x[1]) in [float, int],
+            "solver": solver,
         }
-        new_optional = {
-            'core': lambda x: type(x) in [ndarray, list, tuple],
-            'tolerance': float,
-            'epsilon': lambda x: type(x) in [int, float]
-        }
+        new_optional = {"core": lambda x: type(x) in [ndarray, list, tuple], "tolerance": float, "epsilon": lambda x: type(x) in [int, float]}
         super().__init__()
 
         self.add_new_properties(new_mandatory, new_optional)
 
-        self['exp_vector'] = exp_vector
-        self['exp_thresholds'] = exp_thresholds
+        self["exp_vector"] = exp_vector
+        self["exp_thresholds"] = exp_thresholds
         if core:
-            self['core'] = core
+            self["core"] = core
         if tolerance:
-            self['tolerance'] = tolerance
+            self["tolerance"] = tolerance
         if epsilon:
-            self['epsilon'] = epsilon
+            self["epsilon"] = epsilon
 
     @staticmethod
-    def from_integrated_scores(scores: list, **kwargs) -> 'IMATProperties':
+    def from_integrated_scores(scores: list, **kwargs) -> "IMATProperties":
         """
         Create IMAT properties from integrated scores
 
@@ -114,13 +117,13 @@ class IMAT(ContextSpecificModelReconstructionAlgorithm):
         solution: Solution
             Instance with the solution to the IMAT problem
         """
-        exp_vector = self.properties['exp_vector']
-        exp_lb, exp_ub = self.properties['exp_thresholds']
-        core = self.properties['core']
-        epsilon = self.properties['epsilon']
+        exp_vector = self.properties["exp_vector"]
+        exp_lb, exp_ub = self.properties["exp_thresholds"]
+        core = self.properties["core"]
+        epsilon = self.properties["epsilon"]
 
         high_idx = (np.where(np.array(exp_vector) >= exp_ub)[0]).astype(int)
-        low_idx = (np.where((np.array(exp_vector) >= 0) & (np.array(exp_vector) < exp_lb))[0]).astype(int)
+        low_idx = (np.where(np.array(exp_vector) <= exp_lb)[0]).astype(int)
 
         if core:
             high_idx = np.union1d(high_idx, np.array(core))
@@ -139,14 +142,14 @@ class IMAT(ContextSpecificModelReconstructionAlgorithm):
         list: The list of reactions to keep in the final model
 
         """
-        tol = self.properties['tolerance']
+        tol = self.properties["tolerance"]
         solution = self.run_imat()
-        to_keep = np.where(abs(solution.x())[:self.S.shape[1]] >= tol)[0]
+        to_keep = np.where(abs(solution.x())[: self.S.shape[1]] >= tol)[0]
 
         self.sol = solution
 
-        if solution.status() != 'optimal':
-            print('Solution was not optimal')
+        if solution.status() != "optimal":
+            print("Solution was not optimal")
 
         return to_keep
 
@@ -180,8 +183,7 @@ class IMAT(ContextSpecificModelReconstructionAlgorithm):
         nh, nl = len(high_idx), len(low_idx)
 
         h_ident, l_ident = self.empty_matrix(nh, n), self.empty_matrix(nl, n)
-        h_lb, h_ub, l_lb, l_ub = self.empty_matrix(nh, nh), self.empty_matrix(nh, nh), \
-            self.empty_matrix(nl, nl), self.empty_matrix(nl, nl)
+        h_lb, h_ub, l_lb, l_ub = self.empty_matrix(nh, nh), self.empty_matrix(nh, nh), self.empty_matrix(nl, nl), self.empty_matrix(nl, nl)
         h_diag, l_diag = np.diag_indices_from(h_lb), np.diag_indices_from(l_lb)
 
         if nh > 0:
@@ -199,22 +201,23 @@ class IMAT(ContextSpecificModelReconstructionAlgorithm):
             [h_ident, h_lb, self.empty_matrix(nh, nh + nl)],
             [h_ident, self.empty_matrix(nh, nh), h_ub, self.empty_matrix(nh, nl)],
             [l_ident, self.empty_matrix(nl, nh * 2), l_lb],
-            [l_ident, self.empty_matrix(nl, nh * 2), l_ub]
+            [l_ident, self.empty_matrix(nl, nh * 2), l_ub],
         ]
 
         A = np.vstack(list(map(np.hstack, rows)))
         b_lb = [0] * m + list(lb[high_idx]) + [None] * nh + list(lb[low_idx]) + [None] * nl
         b_ub = [0] * m + [None] * nh + list(ub[high_idx]) + [None] * nl + list(ub[low_idx])
 
-        A_lb, A_ub = np.concatenate([lb, np.array([0] * (2 * nh + nl))]), np.concatenate(
-            [ub, np.array([1] * (2 * nh + nl))])
+        A_lb, A_ub = np.concatenate([lb, np.array([0] * (2 * nh + nl))]), np.concatenate([ub, np.array([1] * (2 * nh + nl))])
         A_vt = [VAR_CONTINUOUS] * n + [VAR_BINARY] * (2 * nh + nl)
 
         ## TODO: Move this to optimization on cobamp
         prefix_maker = lambda cd: list([cd[0] + str(i) for i in range(cd[1])])
-        A_names = list(chain(*list(map(prefix_maker, [('V', n), ('Hpos', nh), ('Hneg', nh), ('L', nl)]))))
+        A_names = list(chain(*list(map(prefix_maker, [("V", n), ("Hpos", nh), ("Hneg", nh), ("L", nl)]))))
 
-        lsystem = GenericLinearSystem(S=A, var_types=A_vt, lb=A_lb, ub=A_ub, b_lb=b_lb, b_ub=b_ub, var_names=A_names, solver=self.properties["solver"])
+        lsystem = GenericLinearSystem(
+            S=A, var_types=A_vt, lb=A_lb, ub=A_ub, b_lb=b_lb, b_ub=b_ub, var_names=A_names, solver=self.properties["solver"]
+        )
         lso = LinearSystemOptimizer(lsystem)
 
         A_f = np.zeros((A.shape[1]))
